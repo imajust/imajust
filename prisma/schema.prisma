@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id          String   @id @default(dbgenerated("public.gen_random_uuid()")) @db.Uuid
+  email       String   @unique
+  license_key String   @unique
+  firebase_id String   @unique
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  templates   template[]
+}
+
+model template {
+  id          String   @id @default(dbgenerated("public.gen_random_uuid()")) @db.Uuid
+  user_id     String   @db.Uuid
+  name        String
+  width       Int
+  height      Int
+  markup      String
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @default(now()) @db.Timestamptz(6)
+  user        user     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
